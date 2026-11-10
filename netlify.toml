@@ -1,0 +1,22 @@
+# Netlify hosts only the React frontend. The Express API runs elsewhere (see render.yaml).
+[build]
+  base = "client"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Forward API calls to the backend so the frontend can keep calling /api/...
+# Replace the URL with your Render service URL after deploying the backend.
+[[redirects]]
+  from = "/api/*"
+  to = "https://myntra-clone-api.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# Single-page app: let React Router handle every other route (/shop/men, /my/orders, ...)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

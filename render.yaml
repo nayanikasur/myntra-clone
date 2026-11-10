@@ -1,0 +1,14 @@
+# Render blueprint for the Express API. Secrets are entered in the Render dashboard, not committed.
+services:
+  - type: web
+    name: myntra-clone-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: MONGO_URI
+        sync: false # paste your MongoDB Atlas connection string in the dashboard
+      - key: JWT_SECRET
+        generateValue: true

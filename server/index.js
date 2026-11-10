@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
 const path = require('path');
 const connectDB = require('./config/db');
 
@@ -17,10 +18,15 @@ app.use('/api/addresses', require('./routes/addresses'));
 app.use('/api/coupons', require('./routes/coupons'));
 app.use('/api', (req, res) => res.status(404).json({ message: 'Not found' }));
 
-// serve the built React app in production
+// serve the built React app when it exists (single-server deploys);
+// on API-only hosts like Render the frontend lives on Netlify instead
 const clientDist = path.join(__dirname, '..', 'client', 'dist');
-app.use(express.static(clientDist));
-app.get(/.*/, (req, res) => res.sendFile(path.join(clientDist, 'index.html')));
+if (fs.existsSync(path.join(clientDist, 'index.html'))) {
+  app.use(express.static(clientDist));
+  app.get(/.*/, (req, res) => res.sendFile(path.join(clientDist, 'index.html')));
+} else {
+  app.get('/', (req, res) => res.json({ status: 'ok', message: 'Myntra clone API' }));
+}
 
 // Express 5 forwards rejected promises from async handlers here
 app.use((err, req, res, next) => {
